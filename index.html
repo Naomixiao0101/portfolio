@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naomi - Xiao Li | Research-led Designer Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@300;400&display=swap');
+
+        :root {
+            --bg-color: #fdfdfd;
+            --text-main: #1a1a1a;
+        }
+
+        * {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            cursor: none; 
+        }
+
+        h1, h2, h3, .serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .cursor-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            mix-blend-mode: difference;
+            transition: transform 0.15s ease-out;
+        }
+
+        .custom-cursor-dot {
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .cursor-text {
+            margin-left: 14px;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            opacity: 1;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .cursor-wrapper.hovering .custom-cursor-dot {
+            transform: scale(4);
+        }
+        
+        .cursor-wrapper.hovering .cursor-text {
+            transform: scale(1.2) translateX(5px);
+            opacity: 0.7;
+        }
+
+        .fade-in { opacity: 0; transform: translateY(30px); transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        .hero-container {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(12, 1fr);
+            height: 100vh;
+            width: 100%;
+            padding: 3rem; 
+            padding-top: 6rem;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .hero-video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+        
+        .hero-video-bg.playing {
+            opacity: 0.7;
+        }
+
+        .hero-title-name {
+            font-size: clamp(4rem, 12vw, 10rem);
+            line-height: 0.9;
+            letter-spacing: -0.02em;
+            pointer-events: none;
+            color: #fff;
+        }
+
+        .hero-corner {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-weight: 500;
+            position: relative;
+            z-index: 10;
+            color: #fff;
+        }
+
+        .hero-center-visual {
+            grid-column: 4 / 10;
+            grid-row: 3 / 11;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 5;
+        }
+
+        .floating-object {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            position: absolute;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .insight-card {
+            border: 1px solid #f3f4f6;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            background: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+        .insight-card.active {
+            border-color: #000;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+        }
+        .insight-card .card-details {
+            max-height: 0;
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .insight-card.active .card-details {
+            max-height: 600px;
+            opacity: 1;
+            padding-top: 1.5rem;
+        }
+        .insight-card .arrow-icon {
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .insight-card.active .arrow-icon {
+            transform: rotate(90deg);
+        }
+
+        #detailModal {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 1000;
+            display: none;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        #detailModal.show {
+            display: block;
+            opacity: 1;
+        }
+        .modal-content-inner {
+            transform: translateY(20px);
+            transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        #detailModal.show .modal-content-inner {
+            transform: translateY(0);
+        }
+
+        .gallery-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 20px;
+            padding-bottom: 20px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .gallery-container::-webkit-scrollbar { display: none; }
+        .gallery-item {
+            flex: 0 0 85%;
+            scroll-snap-align: center;
+            aspect-ratio: 16/9;
+            background: #f7f7f7;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .pick-dice-media-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            width: 100%;
+        }
+        .pick-dice-video-container {
+            width: 100%;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+        .pick-dice-video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .pick-dice-pdf-container {
+            width: 100%;
+            height: 80vh;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+
+        @media (min-width: 1024px) {
+            .gallery-item { flex: 0 0 70%; }
+        }
+
+        .cv-timeline { position: relative; border-left: 1px solid #e5e7eb; padding-left: 1.5rem; }
+        .cv-item { position: relative; margin-bottom: 2.5rem; }
+        .cv-item::before { content: ''; position: absolute; left: calc(-1.5rem - 4.5px); top: 6px; width: 8px; height: 8px; border-radius: 50%; background: #000; }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-wrapper" id="cursor-wrapper">
+        <div class="custom-cursor-dot"></div>
+        <div class="cursor-text">Design</div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="fixed top-0 w-full z-50 px-8 py-6 flex justify-between items-center mix-blend-difference text-white">
+        <div class="text-sm font-medium tracking-tighter uppercase">Xiao Li / Research Designer</div>
+        <div class="space-x-8 hidden md:flex text-[9px] uppercase tracking-[0.2em] font-medium">
+            <a href="#works" class="hover-target">Works</a>
+            <a href="#research" class="hover-target">Perspective</a>
+            <a href="#awards" class="hover-target">Recognition</a>
+            <a href="#contact" class="hover-target">Connect</a>
+        </div>
+    </nav>
+
+    <!-- 1. Hero Section -->
+    <section id="home" class="relative overflow-hidden">
+        <div class="hero-container">
+            <video id="heroVideo" class="hero-video-bg" autoplay muted loop playsinline preload="auto">
+                <source src="https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/jimeng.mp4" type="video/mp4">
+            </video>
+
+            <div class="hero-corner col-start-1 row-start-1 fade-in">
+                <div class="font-bold">Xiao Li / Naomi</div>
+                <div class="text-zinc-400 mt-1">Research-led Designer</div>
+            </div>
+
+            <div class="hero-corner col-start-10 col-end-13 row-start-1 flex flex-col items-end text-right fade-in">
+                <div class="mb-1 text-zinc-300">Portfolio Archive</div>
+                <div class="flex flex-col text-zinc-500 uppercase">
+                    <span>Selected Works</span>
+                    <span>2024-2026</span>
+                </div>
+            </div>
+
+            <div class="hero-corner col-start-1 row-start-12 fade-in self-end">
+                <div class="mono text-[8px]">Mel 37.8136° S / 144.9631° E</div>
+                <div class="mt-1">Available for 2026 Collaboration</div>
+            </div>
+
+            <div class="hero-corner col-start-10 col-end-13 row-start-12 flex flex-col items-end text-right self-end fade-in">
+                <div class="flex flex-col gap-1">
+                    <span>MONASH '26</span>
+                    <span>BJUT '24</span>
+                    <span>UAL '23</span>
+                </div>
+            </div>
+
+            <div class="hero-center-visual fade-in">
+                <div class="absolute inset-0 flex flex-col items-center justify-center z-0">
+                    <h1 class="hero-title-name text-center flex flex-col items-center">
+                        <span>XIAO</span>
+                        <span class="italic serif lowercase -mt-4">Li</span>
+                    </h1>
+                </div>
+                <div class="floating-object z-10"></div>
+                <div class="absolute bottom-[-10vh] text-center w-full z-20">
+                     <p class="mono text-[9px] uppercase tracking-[0.5em] text-zinc-400">Scroll to Explore</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Works Unified Grid Section -->
+    <section id="works" class="px-8 md:px-24 py-32 bg-[#0a0a0a] text-white">
+        <div class="mb-24 fade-in">
+            <h2 class="text-6xl font-light serif mb-6 italic text-zinc-100">Selected Works</h2>
+            <p class="text-gray-500 tracking-widest uppercase text-[9px] font-mono">Portfolio Archive</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 pt-12">
+            
+            <!-- PROJECT 1: Pick Dice -->
+            <div class="group cursor-pointer hover-target" onclick="openDetail('pick-dice', event)">
+                <div class="overflow-hidden aspect-[16/10] mb-6 bg-zinc-900 rounded-lg">
+                    <img src="https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/pick%20dice/%E5%B9%BB%E7%81%AF%E7%89%871.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Pick Dice">
+                </div>
+                <h4 class="text-xl font-normal">Pick Dice</h4>
+                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">Smart App / Shopping Psychology / Research</p>
+            </div>
+
+            <!-- PROJECT 2: Beyond the Border -->
+            <div class="group cursor-pointer hover-target" onclick="openDetail('beyond-the-border', event)">
+                <div class="overflow-hidden aspect-[16/10] mb-6 bg-zinc-900 rounded-lg">
+                    <img src="https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/beyond%20hero.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Beyond the Border">
+                </div>
+                <h4 class="text-xl font-normal">Beyond the Border</h4>
+                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">AR & Mediatisation / Participatory Design / Research</p>
+            </div>
+
+            <!-- PROJECT 3: Mushrooms and the Cycle of Life -->
+            <div class="group cursor-pointer hover-target" onclick="openDetail('mushrooms-cycle', event)">
+                <div class="overflow-hidden aspect-[16/10] mb-6 bg-zinc-900 rounded-lg">
+                    <img src="https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE1.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Mushrooms and the Cycle of Life">
+                </div>
+                <h4 class="text-xl font-normal">MUSHROOMS AND THE CYCLE OF LIFE</h4>
+                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">Graphic & Visual Representation / Ecological Design / Installation</p>
+            </div>
+
+            <!-- PROJECT 4: Bloomly -->
+            <div class="group cursor-pointer hover-target" onclick="openDetail('bloomly', event)">
+                <div class="overflow-hidden aspect-[16/10] mb-6 bg-zinc-900 rounded-lg">
+                    <img src="https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/bommly%20hero.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Bloomly">
+                </div>
+                <h4 class="text-xl font-normal">Bloomly</h4>
+                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">Participatory Design / Family Relationships / Research</p>
+            </div>
+
+            <!-- PROJECT 5: Pawlight -->
+            <div class="group cursor-pointer hover-target" onclick="openDetail('pawlight', event)">
+                <div class="overflow-hidden aspect-[16/10] mb-6 bg-zinc-900 rounded-lg">
+                    <img src="https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/hero%20pawlight.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Pawlight">
+                </div>
+                <h4 class="text-xl font-normal">Pawlight</h4>
+                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">Public Space Intervention / Community App / Research</p>
+            </div>
+
+            <!-- PROJECT 6: Dance / Choreographic Inscriptions -->
+            <div class="group cursor-pointer hover-target" onclick="openDetail('dance-interaction', event)">
+                <div class="overflow-hidden aspect-[16/10] mb-6 bg-zinc-900 rounded-lg">
+                    <img src="https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/dance%20hero.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Choreographic Inscriptions">
+                </div>
+                <h4 class="text-xl font-normal">Embodied Interaction for Digital Cultural Performance（Published Conference Paper）</h4>
+                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">Somatic Interaction / Motion Tracking / Choreographic Research</p>
+            </div>
+
+            <!-- IN PROGRESS CARD -->
+            <div class="group">
+                <div class="aspect-[16/10] mb-6 bg-[#121212] border border-dashed border-zinc-800 rounded-lg flex flex-col justify-center items-center text-center p-6 transition-all duration-750 group-hover:border-zinc-500">
+                    <div class="w-10 h-10 border border-dashed border-zinc-700 rounded-full flex items-center justify-center mb-4 transition-transform duration-1000 group-hover:rotate-180">
+                        <span class="text-zinc-500 text-sm font-light">+</span>
+                    </div>
+                    <p class="mono text-[9px] uppercase tracking-[0.4em] text-zinc-500">In Progress</p>
+                </div>
+                <h4 class="text-xl font-normal text-zinc-400">Project Archive In Progress</h4>
+                <p class="text-[10px] text-zinc-600 uppercase tracking-widest mt-2">More Projects Coming Soon / Research In Progress</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 3. Research Section -->
+    <section id="research" class="px-8 md:px-24 py-32 bg-white">
+        <div class="flex flex-col md:flex-row gap-12 md:gap-24 items-start">
+            <div class="w-full md:w-1/3 fade-in md:sticky md:top-32">
+                <h2 class="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-8">Research Vision</h2>
+                <p class="text-xl md:text-2xl serif italic leading-tight mb-6">
+                    "How <span class="text-zinc-400">interaction</span> enables people to become part of <span class="text-zinc-400">cultural narratives</span>."
+                </p>
+                <p class="text-[13px] text-zinc-500 leading-relaxed font-light">
+                    Exploring how interaction, narrative, and participation can shift audiences from passive observers to active participants in cultural experiences.
+                </p>
+            </div>
+
+            <div class="w-full md:w-2/3 fade-in space-y-4">
+                <h2 class="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-8">Selected Insights</h2>
+                
+                <!-- Insight 1: Feeling the Shift -->
+                <div class="insight-card p-8 cursor-pointer hover-target" onclick="toggleInsight(this)">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col gap-2">
+                            <span class="text-[9px] tracking-widest text-gray-400 uppercase font-mono">Article / 2026</span>
+                            <h4 class="text-xl font-light serif italic">feeling the shift：A Tactile Encounter with Cultural Transformation</h4>
+                        </div>
+                        <i class="fas fa-chevron-right arrow-icon text-gray-300 mt-2"></i>
+                    </div>
+                    <div class="card-details">
+                        <p class="text-sm text-zinc-600 leading-relaxed font-light mb-6">
+                            Feeling the Shift investigates how embodied and multisensory interaction design can transform the way museum visitors understand cultural transformation — not by reading about it, but by physically experiencing it.
+                            <br><br>
+                            Taking the shift from handcrafted to industrially produced porcelain as its case study, the project proposes a museum installation in which visitors shape a standardised silicone vessel with their hands. The material yields, records their touch, then slowly returns to its original form. No instructions. No choice. The cultural shift is felt, not read.
+                            <br><br>
+                            Grounded in Polanyi's theory of tacit knowledge, the project addresses a precise research gap: existing digital craft systems document how things were made, but none confront the transformation between ways of making.
+                        </p>
+                        <div class="flex justify-between items-center mt-6">
+                            <div class="flex gap-4">
+                                <span class="text-[8px] border border-gray-100 px-2 py-1 uppercase tracking-tighter text-gray-400">Tacit Craft</span>
+                                <span class="text-[8px] border border-gray-100 px-2 py-1 uppercase tracking-tighter text-gray-400">Embodiment</span>
+                            </div>
+                            <button onclick="openDetail('feeling-the-shift', event)" class="text-[10px] font-bold uppercase tracking-widest border-b border-black pb-1 hover:opacity-50 transition hover-target">More Detail +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insight 2: Designing Visitor Journeys -->
+                <div class="insight-card p-8 cursor-pointer hover-target" onclick="toggleInsight(this)">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col gap-2">
+                            <span class="text-[9px] tracking-widest text-gray-400 uppercase font-mono">Article / 2025 — Rethinking Museum Interaction Beyond Technology</span>
+                            <h4 class="text-xl font-light serif italic">Designing Visitor Journeys Under Constraints</h4>
+                        </div>
+                        <i class="fas fa-chevron-right arrow-icon text-gray-300 mt-2"></i>
+                    </div>
+                    <div class="card-details">
+                        <p class="text-sm text-zinc-600 leading-relaxed font-light mb-6">
+                            This research explores how small museums can improve visitor experiences without expensive technology or spatial renovations. Through visitor studies, model development, and in-situ evaluation, the project demonstrates how narrative structures and strategically placed interaction points can reshape visitor journeys, increase engagement, and improve knowledge acquisition.
+                        </p>
+                        <div class="flex justify-between items-center mt-6">
+                            <div class="flex gap-4">
+                                <span class="text-[8px] border border-gray-100 px-2 py-1 uppercase tracking-tighter text-gray-400">Museum UX</span>
+                                <span class="text-[8px] border border-gray-100 px-2 py-1 uppercase tracking-tighter text-gray-400">Constraints</span>
+                            </div>
+                            <button onclick="openDetail('visitor-journeys', event)" class="text-[10px] font-bold uppercase tracking-widest border-b border-black pb-1 hover:opacity-50 transition hover-target">More Detail +</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Awards & Feedback -->
+    <section id="awards" class="px-8 md:px-24 py-32 bg-[#050505] text-white">
+        <div class="flex flex-col md:flex-row gap-16 md:gap-24 items-start">
+            <div class="w-full md:w-1/2 fade-in">
+                <h2 class="text-[10px] uppercase tracking-[0.3em] text-zinc-500 font-bold mb-10">Honors & Awards</h2>
+                <div class="space-y-8">
+                    <div class="flex justify-between items-end border-b border-zinc-800 pb-4">
+                        <div>
+                            <h4 class="text-lg font-medium text-zinc-100">Outstanding Award, National Competition</h4>
+                            <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">The 8th Cross-Strait New Design Competition Huacan Awards</p>
+                        </div>
+                        <span class="mono text-[11px] font-bold text-zinc-600">2023</span>
+                    </div>
+                    <div class="flex justify-between items-end border-b border-zinc-800 pb-4">
+                        <div>
+                            <h4 class="text-lg font-medium text-zinc-100">Second Prize, North China Regional Competition</h4>
+                            <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">The 8th Cross-Strait New Design Competition Huacan Awards</p>
+                        </div>
+                        <span class="mono text-[11px] font-bold text-zinc-600">2022</span>
+                    </div>
+                    <div class="flex justify-between items-end border-b border-zinc-800 pb-4">
+                        <div>
+                            <h4 class="text-lg font-medium text-zinc-100">Outstanding Award (Product Design – Advertising Category)</h4>
+                            <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">The 31st Times Golden Calf Awards</p>
+                        </div>
+                        <span class="mono text-[11px] font-bold text-zinc-600">2022</span>
+                    </div>
+                    <div class="flex justify-between items-end border-b border-zinc-800 pb-4">
+                        <div>
+                            <h4 class="text-lg font-medium text-zinc-100">Outstanding Award (Technical Category – Best Aesthetic Design)</h4>
+                            <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">The 31st Times Golden Calf Awards</p>
+                        </div>
+                        <span class="mono text-[11px] font-bold text-zinc-600">2022</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 fade-in">
+                <h2 class="text-[10px] uppercase tracking-[0.3em] text-zinc-500 font-bold mb-10">Project Feedback</h2>
+                <div class="space-y-12">
+                    <div class="relative pl-8 border-l-2 border-zinc-700">
+                        <p class="text-[11px] font-bold uppercase tracking-widest text-zinc-400 mb-2">National Stroke Reduction Project Identity</p>
+                        <p class="text-lg serif italic leading-relaxed text-zinc-200">
+                            "Xiao possesses a rare ability to weave complex research into poetic digital experiences. Her work on Kinetic Memories set a new standard for our lab's interactive installations."
+                        </p>
+                        <div class="mt-4 flex flex-col">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Marcus V. / Lead Researcher</span>
+                        </div>
+                    </div>
+                    <div class="relative pl-8 border-l-2 border-zinc-800">
+                        <p class="text-[11px] font-bold uppercase tracking-widest text-zinc-600 mb-2">Speculative Ecologies Research Initiative</p>
+                        <p class="text-lg serif italic leading-relaxed text-zinc-500">
+                            "A rigorous designer who doesn't shy away from philosophical depth. Her approach to Speculative Ecologies was both brave and technically impeccable."
+                        </p>
+                        <div class="mt-4 flex flex-col">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-700">Dr. Elena Rostova / Senior Design Strategist</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detail Modal -->
+    <div id="detailModal">
+        <div class="px-8 md:px-24 py-12">
+            <div class="flex justify-between items-center mb-12">
+                <span class="mono text-[10px] tracking-[0.5em] text-zinc-400 uppercase">Archive Record</span>
+                <button onclick="closeDetail()" class="text-2xl font-light hover:rotate-90 transition-transform duration-500 hover-target">✕</button>
+            </div>
+            
+            <div class="modal-content-inner max-w-7xl mx-auto" id="modalContent">
+                <!-- Content dynamically injected -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Philosophy -->
+    <section id="philosophy" class="relative min-h-[80vh] flex items-center justify-center px-8 md:px-24 py-32 overflow-hidden bg-zinc-950 text-white">
+        <div class="relative z-10 max-w-5xl text-center">
+            <span class="mono text-[10px] uppercase tracking-[0.5em] text-zinc-500 mb-12 block fade-in">Design Philosophy</span>
+            <h2 class="text-4xl md:text-7xl font-light serif italic leading-[1.1] mb-12 fade-in">
+                "Intervention through <span class="text-zinc-500">narrative</span>."
+            </h2>
+            <div class="w-px h-24 bg-gradient-to-b from-white/40 to-transparent mx-auto mb-12 fade-in"></div>
+            <p class="text-lg md:text-xl font-light text-zinc-400 leading-relaxed max-w-2xl mx-auto fade-in">
+                Design is an active exploration of the symbiotic ways we coexist with technology.
+            </p>
+        </div>
+    </section>
+
+    <!-- 6. Contact & Education -->
+    <footer id="contact" class="px-8 md:px-24 py-32 bg-white border-t border-zinc-100">
+        <div class="flex flex-col md:flex-row gap-16 md:gap-24 items-start">
+            <div class="w-full md:w-1/2 fade-in">
+                <h2 class="text-5xl md:text-7xl font-light serif italic tracking-tighter mb-4">Let's Connect</h2>
+                <p class="text-sm md:text-base text-zinc-400 font-light mb-12 max-w-sm">
+                    Open to collaborative projects, research inquiries, and meaningful discussions about the future of interaction.
+                </p>
+                <div class="space-y-6 mb-12">
+                    <a href="mailto:design.xiaoli@gmail.com" class="text-xl md:text-3xl hover:opacity-40 transition hover-target block underline underline-offset-8 decoration-zinc-100">design.xiaoli@gmail.com</a>
+                    <div class="flex space-x-8 uppercase tracking-[0.2em] text-[10px] font-bold text-zinc-400">
+                        <a href="#" class="hover:text-black transition hover-target">Instagram</a>
+                        <a href="#" class="hover:text-black transition hover-target">LinkedIn</a>
+                        <a href="#" class="hover:text-black transition hover-target">Read.cv</a>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 fade-in">
+                <p class="mono text-[10px] uppercase tracking-widest text-zinc-400 mb-10 font-bold">Education Timeline</p>
+                <div class="cv-timeline">
+                    <div class="cv-item">
+                        <div class="flex flex-col">
+                            <span class="mono text-[9px] text-zinc-400 uppercase">2020 — 2024</span>
+                            <span class="mono text-[11px] font-bold text-zinc-900 mt-1">GPA 3.87 / WAM 89.70 (Top 3%)</span>
+                        </div>
+                        <h4 class="text-lg font-medium serif italic mt-3">BA Visual Communication Design</h4>
+                        <p class="text-[10px] text-zinc-400 uppercase tracking-widest mt-1">Beijing University of Technology (Project 211)</p>
+                    </div>
+                    <div class="cv-item">
+                        <div class="flex flex-col">
+                            <span class="mono text-[9px] text-zinc-400 uppercase">2023</span>
+                            <span class="mono text-[11px] font-bold text-zinc-900 mt-1">Distinction Grade</span>
+                        </div>
+                        <h4 class="text-lg font-medium serif italic mt-3">BA Graphic and Media</h4>
+                        <p class="text-[10px] text-zinc-400 uppercase tracking-widest mt-1">University of the Arts London (UAL)</p>
+                    </div>
+                    <div class="cv-item">
+                        <div class="flex flex-col">
+                            <span class="mono text-[9px] text-zinc-400 uppercase">2024 — 2026</span>
+                            <span class="mono text-[11px] font-bold text-zinc-900 mt-1">WAM 82.7 (Top 5%)</span>
+                        </div>
+                        <h4 class="text-lg font-medium serif italic mt-3">MA Design</h4>
+                        <p class="text-[10px] text-zinc-400 uppercase tracking-widest mt-1">Monash University</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-32 pt-12 border-t border-zinc-50 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p class="text-[8px] uppercase tracking-[0.4em] text-zinc-300 font-mono">© 2026 NAOMI XIAO LI — RESEARCH DESIGN</p>
+            <a href="#home" class="text-[8px] uppercase tracking-[0.4em] text-zinc-400 hover:text-black transition hover-target">Back to Top ↑</a>
+        </div>
+    </footer>
+
+    <script>
+        // Project Data Map with integrated Academic Research Methods
+        const projectDetails = {
+            'pick-dice': {
+                title: 'Pick Dice',
+                subtitle: 'Smart App Design & Research / 2025',
+                video: 'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/PICK%20DICE.mp4',
+                pdf: 'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/PICKDICE-PDF.pdf',
+                text: 'Pick Dice is a research-led smart application design that explores how mobile interventions can streamline daily decision-making. The project investigates the psychological impact of randomized choices on user behavior and shopping habits, addressing modern decision fatigue through an intuitive interactive interface.',
+                methods: ["Cognitive Friction Mapping", "Decision-Making Behavioral Studies", "Micro-interventional UX Prototyping", "A/B Cognitive Testing"]
+            },
+            'beyond-the-border': {
+                title: 'Beyond the Border',
+                subtitle: 'Research Design / 2024',
+                images: [
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/btb%2001.png',
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/btb%2002.png',
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/btb%2003.png',
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/btb%2004.png'
+                ],
+                pdf: 'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/Xiao%20Li%20-TAD5400_compressed.pdf',
+                text: 'Beyond the Border explores how mediatisation and participatory design can revitalise overlooked cultural spaces within university campuses. Using the Monash Computer History Museum as a case study, the project investigated why students rarely notice or engage with the museum and how digital storytelling could transform it from a static archive into an interactive learning experience.<br><br>Through field observation, interviews, surveys, and prototype testing, the project developed an AR guidebook that connected historical artefacts with layered narratives and interactive content. The research demonstrated how media interventions can increase visibility, curiosity, and participation without requiring major physical renovations.',
+                methods: ["Spatial Ethnography", "Participatory Action Research (PAR)", "Cultural Space Co-design Workshops", "Mixed Reality (AR) Prototyping", "Audience Experience Mapping"]
+            },
+            'mushrooms-cycle': {
+                title: 'THE GRAPHIC VISUAL REPRESENTATION OF MUSHROOMS AND THE CYCLE OF LIFE',
+                subtitle: 'Ecological & Visual Communication / 2024',
+                images: [
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE1.png',
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE2.png',
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE3.png',
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE4.png',
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE%E5%AD%97.png',
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE%E5%AD%972.png'
+                ],
+                videos: [
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E5%AE%8C%E6%95%B4%E7%89%88%E8%A7%86%E9%A2%91%20%E4%BA%A4%E4%BA%921%2B2.mp4',
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E5%80%8D%E9%80%9F%E5%B1%95%E8%A7%88.mp4'
+                ],
+                pdf: 'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E8%89%BA%E8%AE%BE%EF%BC%8B%E8%A7%86%E8%A7%89%EF%BC%8B20165104%EF%BC%8B%E6%9D%8E%E6%99%93_%E5%89%AF%E6%9C%AC_compressed.pdf',
+                text: 'A multidisciplinary design project investigating how visual communication and interactive media can make ecological concepts more accessible and emotionally engaging. Using mushrooms as a metaphor for symbiosis, transformation, and regeneration, the project translated biological and philosophical ideas into a series of graphic identities, printed artefacts, and interactive installations. By combining sustainable materials with digital interaction, the work explores new ways of communicating environmental awareness through design.',
+                methods: ["Material Speculation & Bio-Design", "Experiential Graphic Design", "Kinetic Typography & Media Systems", "Narrative Environmental Mapping", "Interactive Spatial Prototyping"]
+            },
+            'bloomly': {
+                title: 'Bloomly',
+                subtitle: 'Participatory & Interaction Design / 2025',
+                video: 'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/Bloomly%20vedio.mp4',
+                pdf: 'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/Bommly.pdf',
+                text: 'A participatory design project exploring how shared growth can strengthen long-distance family relationships. By transforming calls, photos, and responses into the care of a co-grown digital plant, Bloomly reimagines communication as an ongoing collaborative experience rather than a routine exchange of updates. The project combines a mobile app with an ambient physical companion, creating subtle moments of connection between family members separated by distance.',
+                methods: ["Participatory Design Methodology", "Cultural Probes & Contextual Mapping", "Narrative Inquiry & Experience Prototyping", "Ambient Technology Co-evaluation", "Affinity Diagramming"]
+            },
+            'pawlight': {
+                title: 'Pawlight',
+                subtitle: 'Public-Space Intervention & Research / 2026',
+                video: 'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/Pawlight.mp4',
+                pdf: 'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/pawlight%20pdf_compressed-%E5%B7%B2%E5%A3%93%E7%B8%AE_compressed.pdf',
+                text: 'Pawlight is a public-space intervention that transforms dog parks into community hubs. Based on field research across multiple Victorian dog parks, the project addresses issues of comfort, safety, social interaction, and family participation through a lighthouse-inspired gathering structure and companion community app. By combining physical infrastructure with digital services, Pawlight creates a more connected experience for dogs, owners, and local communities.',
+                methods: ["Public Space Ethnography", "Service Blueprinting", "Co-design Workshops", "Speculative Physical Prototyping", "User-Stakeholder Journey Mapping"]
+            },
+            'dance-interaction': {
+                title: 'Embodied Interaction for Digital Cultural Performance（Published Conference Paper）',
+                subtitle: 'Somatic Interaction Design & Motion Tracking / 2025',
+                images: ['https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/dance%20long.png'],
+                pdf: 'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/ID-35%20Final.pdf',
+                text: 'This project explores how full-body movement can become a medium for cultural expression rather than a simple control mechanism. Using motion capture, real-time audio synthesis, and generative visuals, the system transforms gestures from Dai dance into responsive audiovisual experiences. The research investigates embodied interaction as a method for preserving and reinterpreting intangible cultural heritage within digital environments.<br><br><strong>Published in the International Conference on Human-Computer Interaction (HCII 2025).</strong>',
+                methods: ["Somatic Interface Prototyping", "Choreographic Design Ethnography", "Kinaesthetic Empathy Mapping", "Motion Tracking & Gesture Analysis", "Bodily Data Inscription"]
+            },
+            'feeling-the-shift': {
+                title: 'feeling the shift：A Tactile Encounter with Cultural Transformation',
+                subtitle: 'Research Insight / 2026',
+                images: ['https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/feeling1.png'],
+                text: 'Museums tell us that culture developed greatly. But what does that actually feel like?<br><br>This project investigates how embodied and multisensory interaction design can transform the way visitors understand cultural transformation — not by reading about it, but by physically experiencing it. Taking the shift from handcrafted to industrially produced porcelain as its case study, Feeling the Shift proposes a museum installation in which visitors shape a standardised silicone vessel with their bare hands. The material yields, records their touch, and then slowly returns to its original form — leaving only a digital trace on the wall behind them.<br><br>The design is deliberately without instruction, without choice. Visitors are not observers comparing two historical modes. They are participants inside a cultural logic that has already won. The moment of release — when the vessel reclaims its standard form and the body steps aside — is the moment the shift is felt, not read.Grounded in Polanyi\'s theory of tacit knowledge and informed by research in embodied HCI and multisensory museum experience, the project argues that cultural knowledge embedded in physical practice cannot be recovered through visual representation alone. It requires the body. The research gap it addresses is precise: existing digital craft systems document how things were made, but none confront the transformation between ways of making — the displacement of embodied knowledge by mechanical standardisation.<br><br>Feeling the Shift is both a proof of concept and a transferable framework — one that begins with porcelain, but asks a larger question about what museums owe their visitors beyond information.',
+                methods: ["Embodied HCI & Interaction Design", "Tactile Phenomenology Research", "Tacit Knowledge Frameworks (Polanyi)", "Standardized vs. Handcrafted Critique"]
+            },
+            'visitor-journeys': {
+                title: 'Designing Visitor Journeys Under Constraints',
+                subtitle: 'Research Insight / 2025',
+                images: ['https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/Frame%209.png'],
+                text: '<strong class="text-zinc-900 block text-2xl font-light serif mb-4">Research Question</strong><p class="text-lg text-zinc-600 font-light leading-relaxed mb-8">How can interaction design improve visitor experiences in small museums when physical renovation, large budgets, and advanced technologies are not available?</p><strong class="text-zinc-900 block text-xl font-light serif mb-4">Approach</strong><p class="text-md text-zinc-600 font-light leading-relaxed mb-8">The study combined:<br>• Visitor interviews<br>• Experience pain-point analysis<br>• Research-through-design methodology<br>• Development of two interaction design models<br>• Real-world deployment and evaluation in a university museum</p><strong class="text-zinc-900 block text-2xl font-light serif mb-6 border-b border-zinc-100 pb-2">Design Models</strong><div class="space-y-6"><div class="pl-4 border-l border-zinc-200"><strong class="text-zinc-800 block text-xs tracking-[0.2em] font-semibold uppercase mb-2">Content Re-Structuring Model</strong><p class="text-sm text-zinc-500 font-light leading-relaxed">Reorganises exhibits into coherent narrative sequences without changing their physical locations, helping visitors understand relationships between exhibits rather than viewing them as isolated objects.</p></div><div class="pl-4 border-l border-zinc-200"><strong class="text-zinc-800 block text-xs tracking-[0.2em] font-semibold uppercase mb-2">Interaction Point Placement Model</strong><p class="text-sm text-zinc-500 font-light leading-relaxed">Uses Entry Points, Narrative Anchors, and Exploration Points to subtly guide visitor movement and attention throughout the exhibition.</p></div></div>',
+                methods: ["Research-Through-Design (RtD)", "Visitor Journey Evaluation Models", "In-situ Spatial Prototyping", "Resource-Constrained UX Frameworks"]
+            }
+        };
+
+        const video = document.getElementById('heroVideo');
+        const forcePlayVideo = async () => {
+            if (!video) return;
+            try {
+                video.muted = true;
+                await video.play();
+                video.classList.add('playing');
+            } catch (err) {
+                const start = () => { video.play(); video.classList.add('playing'); };
+                window.addEventListener('click', start, {once: true});
+            }
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        const cursorWrapper = document.getElementById('cursor-wrapper');
+        document.addEventListener('mousemove', (e) => {
+            window.requestAnimationFrame(() => {
+                cursorWrapper.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+            });
+        });
+
+        const targets = document.querySelectorAll('.hover-target, a, button, .insight-card, .group');
+        targets.forEach(t => {
+            t.addEventListener('mouseenter', () => cursorWrapper.classList.add('hovering'));
+            t.addEventListener('mouseleave', () => cursorWrapper.classList.remove('hovering'));
+        });
+
+        function toggleInsight(el) {
+            if (event.target.tagName === 'BUTTON') return;
+            const isActive = el.classList.contains('active');
+            document.querySelectorAll('.insight-card').forEach(c => c.classList.remove('active'));
+            if (!isActive) el.classList.add('active');
+        }
+
+        function openDetail(id, event) {
+            if (event) event.stopPropagation();
+            const data = projectDetails[id];
+            if (!data) return;
+            
+            const content = document.getElementById('modalContent');
+            let mediaHtml = '';
+
+            // Dynamic logic rendering based on specific project structures
+            if (id === 'bloomly') {
+                mediaHtml = `
+                    <div class="pick-dice-media-stack">
+                        <!-- Custom centered non-stretched mobile/portrait video block with restricted elegant width -->
+                        <div class="w-full bg-[#000] rounded-xl overflow-hidden shadow-inner flex justify-center items-center py-6">
+                            <video controls autoplay muted loop playsinline class="max-w-[360px] w-full h-auto max-h-[75vh] block mx-auto rounded-lg object-contain shadow-2xl">
+                                <source src="${data.video}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="pick-dice-pdf-container">
+                            <iframe src="https://docs.google.com/viewer?url=${encodeURIComponent(data.pdf)}&embedded=true" class="w-full h-full border-none"></iframe>
+                        </div>
+                    </div>
+                `;
+            } else if (id === 'pawlight') {
+                mediaHtml = `
+                    <div class="pick-dice-media-stack">
+                        <!-- Custom centered uncropped adaptive video container for Pawlight -->
+                        <div class="w-full bg-[#000] rounded-xl overflow-hidden shadow-inner flex justify-center items-center py-6">
+                            <video controls autoplay muted loop playsinline class="max-w-full h-auto max-h-[75vh] block mx-auto rounded-lg object-contain shadow-2xl">
+                                <source src="${data.video}" type="video/mp4">
+                            </video>
+                        </div>
+                        <!-- High-quality Minimalist Academic Download Card -->
+                        <div class="border border-zinc-200 rounded-xl p-8 bg-zinc-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                            <div class="flex items-start gap-4">
+                                <div class="p-3.5 bg-zinc-950 text-white rounded-lg flex items-center justify-center">
+                                    <i class="far fa-file-pdf text-xl"></i>
+                                </div>
+                                <div class="flex flex-col">
+                                    <h4 class="text-lg font-light serif italic text-zinc-900">Pawlight Academic Research & Field Report</h4>
+                                    <p class="text-[11px] text-zinc-500 uppercase tracking-widest mt-1">Category: Public Space Intervention & Community App Research</p>
+                                    <div class="flex gap-4 mt-2">
+                                        <span class="mono text-[9px] uppercase text-zinc-400 font-bold">Size: 24 MB</span>
+                                        <span class="mono text-[9px] uppercase text-zinc-400 font-bold">Format: High-Res PDF</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="https://github.com/Naomixiao0101/portfolio/blob/main/pawlight%20pdf_compressed-%E5%B7%B2%E5%A3%93%E7%B8%AE_compressed.pdf" 
+                               target="_blank" 
+                               class="bg-zinc-900 hover:bg-zinc-800 text-white px-6 py-3 rounded text-[10px] tracking-widest uppercase font-semibold transition hover-target flex items-center gap-2 self-stretch md:self-auto justify-center shadow-sm">
+                                <span>Download PDF</span>
+                                <i class="fas fa-download text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } else if (id === 'pick-dice') {
+                mediaHtml = `
+                    <div class="pick-dice-media-stack">
+                        <div class="pick-dice-video-container">
+                            <video controls autoplay muted loop playsinline class="w-full h-auto">
+                                <source src="${data.video}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="pick-dice-pdf-container">
+                            <iframe src="https://docs.google.com/viewer?url=${encodeURIComponent(data.pdf)}&embedded=true" class="w-full h-full border-none"></iframe>
+                        </div>
+                    </div>
+                `;
+            } else if (id === 'beyond-the-border') {
+                mediaHtml = `
+                    <div class="pick-dice-media-stack">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            ${data.images.map(img => `
+                                <div class="rounded-lg overflow-hidden border border-zinc-100 bg-zinc-50">
+                                    <img src="${img}" class="w-full h-auto object-cover" alt="Beyond the Border Detail">
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="pick-dice-pdf-container">
+                            <iframe src="https://docs.google.com/viewer?url=${encodeURIComponent(data.pdf)}&embedded=true" class="w-full h-full border-none"></iframe>
+                        </div>
+                    </div>
+                `;
+            } else if (id === 'feeling-the-shift' || id === 'visitor-journeys') {
+                mediaHtml = `
+                    <div class="w-full bg-white rounded-xl overflow-hidden flex justify-center items-center py-4 border border-zinc-100">
+                        <img src="${data.images[0]}" class="max-w-full h-auto max-h-[80vh] object-contain rounded-lg" alt="${data.title}">
+                    </div>
+                `;
+            } else if (id === 'dance-interaction') {
+                mediaHtml = `
+                    <div class="pick-dice-media-stack">
+                        <!-- Full-width unconstrained vertical scrolling container for maximum long-image clarity -->
+                        <div class="w-full bg-white rounded-xl overflow-hidden border border-zinc-100 flex justify-center py-4">
+                            <img src="${data.images[0]}" class="w-full h-auto object-contain rounded-lg shadow-sm" style="image-rendering: -webkit-optimize-contrast;" alt="Choreographic Inscriptions Long Read">
+                        </div>
+                        <div class="pick-dice-pdf-container">
+                            <iframe src="https://docs.google.com/viewer?url=${encodeURIComponent(data.pdf)}&embedded=true" class="w-full h-full border-none"></iframe>
+                        </div>
+                    </div>
+                `;
+            } else if (id === 'mushrooms-cycle') {
+                mediaHtml = `
+                    <div class="pick-dice-media-stack">
+                        <!-- Horizontal Scrollable Gallery -->
+                        <div class="gallery-container">
+                            ${data.images.map(img => `
+                                <div class="gallery-item">
+                                    <img src="${img}" class="w-full h-full object-cover" alt="${data.title}">
+                                </div>
+                            `).join('')}
+                        </div>
+                        <!-- Stacked Dual Interactive Videos (Vertical Stack for Full Aspect Ratio Display) -->
+                        <div class="flex flex-col gap-8 w-full">
+                            ${data.videos.map(video => `
+                                <div class="w-full bg-[#000] rounded-xl overflow-hidden shadow-inner flex justify-center items-center py-4">
+                                    <video controls autoplay muted loop playsinline class="max-w-full h-auto max-h-[75vh] block mx-auto object-contain">
+                                        <source src="${video}" type="video/mp4">
+                                    </video>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <!-- Academic Paper PDF Container -->
+                        <div class="pick-dice-pdf-container">
+                            <iframe src="https://docs.google.com/viewer?url=${encodeURIComponent(data.pdf)}&embedded=true" class="w-full h-full border-none"></iframe>
+                        </div>
+                    </div>
+                `;
+            } else if (data.images) {
+                mediaHtml = `
+                    <div class="gallery-container">
+                        ${data.images.map(img => `<div class="gallery-item"><img src="${img}" class="w-full h-full object-cover" alt="${data.title}"></div>`).join('')}
+                    </div>
+                `;
+            }
+
+            content.innerHTML = `
+                <div class="flex flex-col gap-12">
+                    <!-- Project Introduction (Title & Abstract) on top -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 border-b border-zinc-100 pb-10">
+                        <div class="lg:col-span-5">
+                            <h2 class="text-4xl md:text-6xl font-light serif italic mb-4">${data.title}</h2>
+                            <p class="mono text-[10px] uppercase tracking-[0.4em] text-zinc-400">${data.subtitle}</p>
+                            
+                            <!-- Methods Section nicely nested in left column -->
+                            ${data.methods ? `
+                            <div class="mt-8 pt-6 border-t border-zinc-100">
+                                <span class="mono text-[9px] uppercase tracking-[0.3em] text-zinc-400 block mb-3 font-bold">Research Methods</span>
+                                <div class="flex flex-wrap gap-2">
+                                    ${data.methods.map(m => `<span class="text-[9px] tracking-wider uppercase bg-zinc-50 border border-zinc-100 text-zinc-500 px-3 py-1.5 rounded font-mono font-medium">${m}</span>`).join('')}
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <div class="lg:col-span-7 col-content-block">
+                            <p class="text-lg md:text-xl font-light leading-relaxed text-zinc-600 max-w-2xl">${data.text}</p>
+                        </div>
+                    </div>
+                    <!-- Project Media Stack & PDF underneath -->
+                    ${mediaHtml}
+                </div>
+            `;
+            
+            const modal = document.getElementById('detailModal');
+            modal.style.display = 'block';
+            setTimeout(() => { modal.classList.add('show'); document.body.style.overflow = 'hidden'; }, 10);
+        }
+
+        function closeDetail() {
+            const modal = document.getElementById('detailModal');
+            modal.classList.remove('show');
+            setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 500);
+        }
+
+        window.addEventListener('load', forcePlayVideo);
+    </script>
+</body>
+</html>
