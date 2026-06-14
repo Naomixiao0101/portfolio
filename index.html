@@ -253,6 +253,10 @@
         .cv-timeline { position: relative; border-left: 1px solid #e5e7eb; padding-left: 1.5rem; }
         .cv-item { position: relative; margin-bottom: 2.5rem; }
         .cv-item::before { content: ''; position: absolute; left: calc(-1.5rem - 4.5px); top: 6px; width: 8px; height: 8px; border-radius: 50%; background: #000; }
+        
+        .progress-dashed-border {
+            border: 1px dashed #404040;
+        }
     </style>
 </head>
 <body>
@@ -331,13 +335,22 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 pt-12">
             
-            <!-- PROJECT 1: Pick Dice -->
-            <div class="group cursor-pointer hover-target" onclick="openDetail('pick-dice', event)">
+            <!-- NEW PROJECT: On Board -->
+            <div class="group cursor-pointer hover-target" onclick="openDetail('on-board', event)">
                 <div class="overflow-hidden aspect-[16/10] mb-6 bg-zinc-900 rounded-lg">
-                    <img src="https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/pick%20dice/%E5%B9%BB%E7%81%AF%E7%89%871.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Pick Dice">
+                    <img src="https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/tap.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="On Board">
                 </div>
-                <h4 class="text-xl font-normal">Pick Dice</h4>
-                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">Smart App / Shopping Psychology / Research</p>
+                <h4 class="text-xl font-normal">On Board</h4>
+                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">Participation Design / Digital Storytelling / Immigration Museum</p>
+            </div>
+
+            <!-- PROJECT 1: Embodied Interaction -->
+            <div class="group cursor-pointer hover-target" onclick="openDetail('dance-interaction', event)">
+                <div class="overflow-hidden aspect-[16/10] mb-6 bg-zinc-900 rounded-lg">
+                    <img src="https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/dance%20hero.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Choreographic Inscriptions">
+                </div>
+                <h4 class="text-xl font-normal">Embodied Interaction for Digital Cultural Performance（Published Conference Paper）</h4>
+                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">Somatic Interaction / Motion Tracking / Choreographic Research</p>
             </div>
 
             <!-- PROJECT 2: Beyond the Border -->
@@ -376,25 +389,23 @@
                 <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">Public Space Intervention / Community App / Research</p>
             </div>
 
-            <!-- PROJECT 6: Dance / Choreographic Inscriptions -->
-            <div class="group cursor-pointer hover-target" onclick="openDetail('dance-interaction', event)">
+            <!-- PROJECT 6: Pick Dice -->
+            <div class="group cursor-pointer hover-target" onclick="openDetail('pick-dice', event)">
                 <div class="overflow-hidden aspect-[16/10] mb-6 bg-zinc-900 rounded-lg">
-                    <img src="https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/dance%20hero.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Choreographic Inscriptions">
+                    <img src="https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/pick%20dice/%E5%B9%BB%E7%81%AF%E7%89%871.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Pick Dice">
                 </div>
-                <h4 class="text-xl font-normal">Embodied Interaction for Digital Cultural Performance（Published Conference Paper）</h4>
-                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">Somatic Interaction / Motion Tracking / Choreographic Research</p>
+                <h4 class="text-xl font-normal">Pick Dice</h4>
+                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">Smart App / Shopping Psychology / Research</p>
             </div>
 
-            <!-- IN PROGRESS CARD -->
-            <div class="group">
-                <div class="aspect-[16/10] mb-6 bg-[#121212] border border-dashed border-zinc-800 rounded-lg flex flex-col justify-center items-center text-center p-6 transition-all duration-750 group-hover:border-zinc-500">
-                    <div class="w-10 h-10 border border-dashed border-zinc-700 rounded-full flex items-center justify-center mb-4 transition-transform duration-1000 group-hover:rotate-180">
-                        <span class="text-zinc-500 text-sm font-light">+</span>
-                    </div>
-                    <p class="mono text-[9px] uppercase tracking-[0.4em] text-zinc-500">In Progress</p>
+            <!-- Project Archive In Progress -->
+            <div class="group cursor-pointer hover-target">
+                <div class="progress-dashed-border aspect-[16/10] flex flex-col items-center justify-center rounded-lg bg-zinc-900/50">
+                    <i class="fas fa-plus text-zinc-600 text-3xl mb-4"></i>
+                    <p class="text-zinc-600 font-mono text-sm tracking-widest uppercase">In Progress</p>
                 </div>
-                <h4 class="text-xl font-normal text-zinc-400">Project Archive In Progress</h4>
-                <p class="text-[10px] text-zinc-600 uppercase tracking-widest mt-2">More Projects Coming Soon / Research In Progress</p>
+                <h4 class="text-xl font-normal text-zinc-300 mt-6">Project Archive In Progress</h4>
+                <p class="text-[10px] text-zinc-600 uppercase tracking-widest mt-2">More projects coming soon / Research in progress</p>
             </div>
 
         </div>
@@ -416,7 +427,6 @@
             <div class="w-full md:w-2/3 fade-in space-y-4">
                 <h2 class="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-8">Selected Insights</h2>
                 
-                <!-- Insight 1: Feeling the Shift -->
                 <div class="insight-card p-8 cursor-pointer hover-target" onclick="toggleInsight(this)">
                     <div class="flex justify-between items-start">
                         <div class="flex flex-col gap-2">
@@ -443,7 +453,6 @@
                     </div>
                 </div>
 
-                <!-- Insight 2: Designing Visitor Journeys -->
                 <div class="insight-card p-8 cursor-pointer hover-target" onclick="toggleInsight(this)">
                     <div class="flex justify-between items-start">
                         <div class="flex flex-col gap-2">
@@ -614,8 +623,15 @@
     </footer>
 
     <script>
-        // Project Data Map with integrated Academic Research Methods
         const projectDetails = {
+            'on-board': {
+                title: 'On Board',
+                subtitle: 'Participation Design & Digital Storytelling / 2026',
+                video: 'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/onboard.mp4',
+                pdf: 'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/XIAO%20LI%20document-%20DGN5204-%E5%B7%B2%E5%8E%8B%E7%BC%A9.pdf',
+                text: 'On Board explores how museums can move beyond exhibition spaces to become platforms for participation, connection, and belonging. Designed for the Immigration Museum Melbourne, the project combines physical tickets, digital storytelling, and community engagement to create a personalised journey through migration history.<br><br>Each visitor is paired with a real historical migrant from the museum archive and follows their story while exploring the exhibition. Through interactive touchpoints, reflections, and a shared digital platform, visitors build their own journey while contributing to a growing community archive.<br><br>The project creates a continuous experience that connects historical collections, contemporary audiences, and migrant communities—transforming the museum visit from a moment of observation into an ongoing act of participation.',
+                methods: ["Participatory Museum Design", "Digital Narrative Mapping", "Community Co-Creation Frameworks", "Immersive Visitor Experience Design"]
+            },
             'pick-dice': {
                 title: 'Pick Dice',
                 subtitle: 'Smart App Design & Research / 2025',
@@ -645,7 +661,7 @@
                     'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE2.png',
                     'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE3.png',
                     'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE4.png',
-                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE%E5%AD%97.png',
+                    'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE%E5%AD%971.png',
                     'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/%E6%AF%95%E8%AE%BE%E5%AD%972.png'
                 ],
                 videos: [
@@ -677,7 +693,7 @@
                 subtitle: 'Somatic Interaction Design & Motion Tracking / 2025',
                 images: ['https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/dance%20long.png'],
                 pdf: 'https://raw.githubusercontent.com/Naomixiao0101/portfolio/main/ID-35%20Final.pdf',
-                text: 'This project explores how full-body movement can become a medium for cultural expression rather than a simple control mechanism. Using motion capture, real-time audio synthesis, and generative visuals, the system transforms gestures from Dai dance into responsive audiovisual experiences. The research investigates embodied interaction as a method for preserving and reinterpreting intangible cultural heritage within digital environments.<br><br><strong>Published in the International Conference on Human-Computer Interaction (HCII 2025).</strong>',
+                text: 'This project explores how full-body movement can become a medium for cultural expression rather than a simple control mechanism. Using motion capture, real-time audio synthesis, and generative visuals, the system transforms gestures from Dai dance into responsive audiovisual experiences. The research investigates embodied interaction as a method for preserving and reinterpreting intangible cultural heritage within digital environments.<br><br>Published in The 2025 International Conference on Digital Design Engineering (ICDDE 2025).',
                 methods: ["Somatic Interface Prototyping", "Choreographic Design Ethnography", "Kinaesthetic Empathy Mapping", "Motion Tracking & Gesture Analysis", "Bodily Data Inscription"]
             },
             'feeling-the-shift': {
@@ -742,13 +758,11 @@
             const content = document.getElementById('modalContent');
             let mediaHtml = '';
 
-            // Dynamic logic rendering based on specific project structures
-            if (id === 'bloomly') {
+            if (id === 'on-board' || id === 'pick-dice' || id === 'bloomly') {
                 mediaHtml = `
                     <div class="pick-dice-media-stack">
-                        <!-- Custom centered non-stretched mobile/portrait video block with restricted elegant width -->
                         <div class="w-full bg-[#000] rounded-xl overflow-hidden shadow-inner flex justify-center items-center py-6">
-                            <video controls autoplay muted loop playsinline class="max-w-[360px] w-full h-auto max-h-[75vh] block mx-auto rounded-lg object-contain shadow-2xl">
+                            <video controls autoplay muted loop playsinline class="max-w-full w-full h-auto max-h-[75vh] block mx-auto rounded-lg object-contain shadow-2xl">
                                 <source src="${data.video}" type="video/mp4">
                             </video>
                         </div>
@@ -760,13 +774,11 @@
             } else if (id === 'pawlight') {
                 mediaHtml = `
                     <div class="pick-dice-media-stack">
-                        <!-- Custom centered uncropped adaptive video container for Pawlight -->
                         <div class="w-full bg-[#000] rounded-xl overflow-hidden shadow-inner flex justify-center items-center py-6">
                             <video controls autoplay muted loop playsinline class="max-w-full h-auto max-h-[75vh] block mx-auto rounded-lg object-contain shadow-2xl">
                                 <source src="${data.video}" type="video/mp4">
                             </video>
                         </div>
-                        <!-- High-quality Minimalist Academic Download Card -->
                         <div class="border border-zinc-200 rounded-xl p-8 bg-zinc-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                             <div class="flex items-start gap-4">
                                 <div class="p-3.5 bg-zinc-950 text-white rounded-lg flex items-center justify-center">
@@ -775,31 +787,12 @@
                                 <div class="flex flex-col">
                                     <h4 class="text-lg font-light serif italic text-zinc-900">Pawlight Academic Research & Field Report</h4>
                                     <p class="text-[11px] text-zinc-500 uppercase tracking-widest mt-1">Category: Public Space Intervention & Community App Research</p>
-                                    <div class="flex gap-4 mt-2">
-                                        <span class="mono text-[9px] uppercase text-zinc-400 font-bold">Size: 24 MB</span>
-                                        <span class="mono text-[9px] uppercase text-zinc-400 font-bold">Format: High-Res PDF</span>
-                                    </div>
                                 </div>
                             </div>
-                            <a href="https://github.com/Naomixiao0101/portfolio/blob/main/pawlight%20pdf_compressed-%E5%B7%B2%E5%A3%93%E7%B8%AE_compressed.pdf" 
-                               target="_blank" 
-                               class="bg-zinc-900 hover:bg-zinc-800 text-white px-6 py-3 rounded text-[10px] tracking-widest uppercase font-semibold transition hover-target flex items-center gap-2 self-stretch md:self-auto justify-center shadow-sm">
+                            <a href="${data.pdf}" target="_blank" class="bg-zinc-900 hover:bg-zinc-800 text-white px-6 py-3 rounded text-[10px] tracking-widest uppercase font-semibold transition hover-target flex items-center gap-2 self-stretch md:self-auto justify-center shadow-sm">
                                 <span>Download PDF</span>
                                 <i class="fas fa-download text-xs"></i>
                             </a>
-                        </div>
-                    </div>
-                `;
-            } else if (id === 'pick-dice') {
-                mediaHtml = `
-                    <div class="pick-dice-media-stack">
-                        <div class="pick-dice-video-container">
-                            <video controls autoplay muted loop playsinline class="w-full h-auto">
-                                <source src="${data.video}" type="video/mp4">
-                            </video>
-                        </div>
-                        <div class="pick-dice-pdf-container">
-                            <iframe src="https://docs.google.com/viewer?url=${encodeURIComponent(data.pdf)}&embedded=true" class="w-full h-full border-none"></iframe>
                         </div>
                     </div>
                 `;
@@ -827,7 +820,6 @@
             } else if (id === 'dance-interaction') {
                 mediaHtml = `
                     <div class="pick-dice-media-stack">
-                        <!-- Full-width unconstrained vertical scrolling container for maximum long-image clarity -->
                         <div class="w-full bg-white rounded-xl overflow-hidden border border-zinc-100 flex justify-center py-4">
                             <img src="${data.images[0]}" class="w-full h-auto object-contain rounded-lg shadow-sm" style="image-rendering: -webkit-optimize-contrast;" alt="Choreographic Inscriptions Long Read">
                         </div>
@@ -839,7 +831,6 @@
             } else if (id === 'mushrooms-cycle') {
                 mediaHtml = `
                     <div class="pick-dice-media-stack">
-                        <!-- Horizontal Scrollable Gallery -->
                         <div class="gallery-container">
                             ${data.images.map(img => `
                                 <div class="gallery-item">
@@ -847,7 +838,6 @@
                                 </div>
                             `).join('')}
                         </div>
-                        <!-- Stacked Dual Interactive Videos (Vertical Stack for Full Aspect Ratio Display) -->
                         <div class="flex flex-col gap-8 w-full">
                             ${data.videos.map(video => `
                                 <div class="w-full bg-[#000] rounded-xl overflow-hidden shadow-inner flex justify-center items-center py-4">
@@ -857,29 +847,20 @@
                                 </div>
                             `).join('')}
                         </div>
-                        <!-- Academic Paper PDF Container -->
                         <div class="pick-dice-pdf-container">
                             <iframe src="https://docs.google.com/viewer?url=${encodeURIComponent(data.pdf)}&embedded=true" class="w-full h-full border-none"></iframe>
                         </div>
-                    </div>
-                `;
-            } else if (data.images) {
-                mediaHtml = `
-                    <div class="gallery-container">
-                        ${data.images.map(img => `<div class="gallery-item"><img src="${img}" class="w-full h-full object-cover" alt="${data.title}"></div>`).join('')}
                     </div>
                 `;
             }
 
             content.innerHTML = `
                 <div class="flex flex-col gap-12">
-                    <!-- Project Introduction (Title & Abstract) on top -->
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 border-b border-zinc-100 pb-10">
                         <div class="lg:col-span-5">
                             <h2 class="text-4xl md:text-6xl font-light serif italic mb-4">${data.title}</h2>
                             <p class="mono text-[10px] uppercase tracking-[0.4em] text-zinc-400">${data.subtitle}</p>
                             
-                            <!-- Methods Section nicely nested in left column -->
                             ${data.methods ? `
                             <div class="mt-8 pt-6 border-t border-zinc-100">
                                 <span class="mono text-[9px] uppercase tracking-[0.3em] text-zinc-400 block mb-3 font-bold">Research Methods</span>
@@ -893,7 +874,6 @@
                             <p class="text-lg md:text-xl font-light leading-relaxed text-zinc-600 max-w-2xl">${data.text}</p>
                         </div>
                     </div>
-                    <!-- Project Media Stack & PDF underneath -->
                     ${mediaHtml}
                 </div>
             `;
