@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>The Archive · Feeling the Shift</title>
+<style>
+  :root{ --bg:#0b0a09; --ink:#f3ece2; --muted:#9c9185; --faint:#857a6d; --clay:#c96f43; --clay2:#e0955f; --hair:#2a251f; }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+  a{color:inherit}
+  header{padding:clamp(1.6rem,5vw,2.6rem) clamp(1rem,5vw,2rem) 1rem;text-align:center}
+  header .eyebrow{font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--clay2);margin-bottom:.5rem}
+  header h1{font-weight:200;font-size:clamp(1.6rem,6vw,2.4rem);margin:0;letter-spacing:.02em}
+  header p{color:var(--muted);font-size:.85rem;margin:.5rem 0 0}
+  #status{text-align:center;color:var(--faint);padding:2rem 1rem;font-size:.9rem}
+  #gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;
+    padding:clamp(.8rem,4vw,1.6rem);max-width:1100px;margin:0 auto}
+  .card{border-radius:12px;overflow:hidden;border:1px solid var(--hair);background:#141010;cursor:pointer;
+    display:flex;flex-direction:column;transition:transform .2s,border-color .2s}
+  .card:active{transform:scale(.97)} .card:hover{border-color:var(--clay)}
+  .card img{width:100%;aspect-ratio:3/4;object-fit:cover;background:#0b0a09;display:block}
+  .card .m{padding:.5rem .7rem;font-size:.72rem;color:var(--muted);border-top:1px solid var(--hair);
+    display:flex;justify-content:space-between;gap:.5rem}
+  .card .m b{color:var(--clay2);font-weight:500}
+
+  /* viewer overlay */
+  #viewer{position:fixed;inset:0;z-index:20;background:#0b0a09;display:none;flex-direction:column}
+  #viewer.on{display:flex}
+  #vcanvas{width:100%;flex:1 1 42vh;min-height:30vh;display:block}
+  #vpanel{flex:1 1 auto;overflow:auto;padding:clamp(1.2rem,5vw,2rem);background:linear-gradient(0deg,#0b0a09 70%,transparent);border-top:1px solid rgba(201,111,67,.18)}
+  @media(min-width:800px){ #viewer.on{flex-direction:row} #vcanvas{flex:1;height:100vh} #vpanel{width:min(44vw,520px);height:100vh;border-top:none;border-left:1px solid rgba(201,111,67,.18)} }
+  .eyebrow{font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:var(--clay2);margin-bottom:.5rem}
+  #vpanel h2{font-weight:200;font-size:clamp(1.5rem,5vw,2rem);margin:.1rem 0 .3rem;line-height:1.15}
+  .rculture{font-size:.82rem;color:var(--clay2);font-style:italic;margin:0 0 1.4rem;padding-bottom:1.2rem;border-bottom:1px solid var(--hair)}
+  .rculture:empty{display:none}
+  #vdonut-wrap{display:flex;align-items:center;gap:1rem;margin:0 0 1.6rem}
+  #vdonut{width:88px;height:88px;flex:none}
+  #vdonut-leg .lg{display:flex;align-items:center;gap:.5rem;font-size:.76rem;color:var(--muted);margin:.26rem 0}
+  #vdonut-leg .lg i{width:10px;height:10px;border-radius:3px;display:inline-block;flex:none}
+  #vdonut-leg .lg b{color:var(--clay2);font-weight:400}
+  .olabel{font-size:.64rem;letter-spacing:.26em;text-transform:uppercase;color:var(--clay2);margin:1.5rem 0 .6rem}
+  .vzone{width:100%;max-width:380px;display:block;border-radius:10px;border:1px solid var(--hair);background:#efe7db;margin:.2rem 0 1.2rem}
+  .vmap{position:relative;width:100%;max-width:380px;margin:.3rem 0 .7rem}
+  .vmap img{width:100%;display:block;opacity:.85}
+  .vmap .vpin{position:absolute;width:11px;height:11px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--clay2);box-shadow:0 0 0 3px rgba(224,149,95,.28),0 0 10px 2px rgba(224,149,95,.7)}
+  .vcountry{display:flex;align-items:center;gap:.5rem;font-size:1rem;color:var(--ink)}
+  .vcountry svg{width:15px;height:15px;fill:var(--clay2)}
+  .vregion{font-size:.76rem;color:var(--muted);margin:.15rem 0 1rem 1rem}
+  .sec{margin:1.3rem 0}
+  .sec .k{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--clay2);margin-bottom:.4rem}
+  .sec p{margin:0;font-size:.95rem;line-height:1.65;color:#ece3d5;font-weight:300}
+  .sec.q{margin-top:1.8rem;padding:1.1rem 1.2rem;border-left:2px solid var(--clay);border-radius:0 8px 8px 0;background:linear-gradient(90deg,rgba(201,111,67,.09),transparent)}
+  .sec.q p{font-style:italic;color:#e7ddce}
+  .figimg{margin:1.3rem 0}
+  .figimg img{width:100%;display:block;border-radius:10px;border:1px solid var(--hair);background:#120f0d}
+  .figimg figcaption{font-size:.72rem;color:var(--faint);font-style:italic;margin-top:.5rem;text-align:center}
+  .vbar{position:absolute;top:14px;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 14px;z-index:2;pointer-events:none}
+  .vbtn{pointer-events:auto;font:inherit;font-size:.85rem;cursor:pointer;color:var(--ink);background:rgba(15,12,10,.72);border:1px solid #433b33;border-radius:999px;padding:.5rem .95rem;backdrop-filter:blur(6px)}
+  .vbtn:hover{border-color:var(--clay)}
+  .vnav{position:absolute;bottom:calc(1fr);display:flex;gap:.5rem}
+  #vprev,#vnext{position:absolute;top:21vh;transform:translateY(-50%);z-index:2}
+  @media(min-width:800px){ #vprev,#vnext{top:50vh} }
+  #vprev{left:14px} #vnext{right:14px}
+  footer{text-align:center;color:var(--faint);font-size:.75rem;padding:2rem 1rem 3rem}
+</style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Feeling the Shift</div>
+    <h1>The Archive</h1>
+    <p>Every visitor's reshaping, kept. Tap a record to see how it was made.</p>
+  </header>
+  <div id="status">Loading…</div>
+  <div id="gallery"></div>
+  <footer>A Tactile Encounter with Cultural Transformation</footer>
+
+  <section id="viewer">
+    <canvas id="vcanvas"></canvas>
+    <div class="vbar">
+      <button class="vbtn" id="vclose">← Archive</button>
+      <button class="vbtn" id="vexport">Save to print ↓</button>
+    </div>
+    <button class="vbtn" id="vprev">‹</button>
+    <button class="vbtn" id="vnext">›</button>
+    <div id="vpanel">
+      <div class="eyebrow">Archive record</div>
+      <h2 id="v-title">A reshaping</h2>
+      <div class="rculture" id="v-culture"></div>
+      <div class="olabel">Cultural origin</div>
+      <div class="vmap"><img id="v-map" src="worldmap.png" alt="" onerror="this.parentNode.style.display='none'"><span class="vpin" id="v-pin"></span></div>
+      <div class="vcountry"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg><b id="v-country"></b></div>
+      <div class="vregion" id="v-region"></div>
+      <div class="olabel">Where you reshaped</div>
+      <img class="vzone" id="v-zone" alt="" onerror="this.style.display='none'">
+      <div id="vdonut-wrap"><svg id="vdonut" viewBox="0 0 120 120"></svg><div id="vdonut-leg"></div></div>
+      <div class="sec"><div class="k">Your Gesture</div><p id="v-gesture"></p></div>
+      <div class="sec"><div class="k">Craft Knowledge</div><p id="v-craft"></p></div>
+      <figure class="figimg" id="v-fig"><img id="v-fig-img" alt="" onerror="this.closest('figure').style.display='none'"><figcaption id="v-fig-cap"></figcaption></figure>
+      <div class="sec"><div class="k">Embodied Connection</div><p id="v-connection"></p></div>
+      <div class="sec q"><div class="k">Reflective Question</div><p id="v-question"></p></div>
+    </div>
+  </section>
+
+  <!-- off-screen export card -> 3:2 PNG for the Xiaomi 2x3 ZINK paper -->
+  <style>
+    #export-stage{position:fixed;left:-20000px;top:0;width:1500px}
+    #export-card{width:1500px;height:1000px;background:radial-gradient(60% 55% at 28% 38%,rgba(201,111,67,.09),transparent 72%),var(--bg);color:var(--ink);position:relative;display:flex;gap:56px;padding:64px 72px;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow:hidden}
+    #export-card .eyebrow{font-size:16px;letter-spacing:.26em;text-transform:uppercase;color:var(--clay2);margin-bottom:14px}
+    #export-card .L{width:470px;flex:none;display:flex;flex-direction:column}
+    #export-card .L .zone{width:100%;border-radius:12px;border:1px solid var(--hair);background:#efe7db;display:block;margin-bottom:22px}
+    #export-card .drow{display:flex;align-items:center;gap:24px;margin-bottom:6px}
+    #export-card .drow .dchart{position:relative;width:140px;height:140px;flex:none}
+    #export-card .drow svg{width:140px;height:140px}
+    #export-card .drow .dctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    #export-card .drow .dctr b{font-size:32px;font-weight:300;color:var(--clay2);line-height:1}
+    #export-card .drow .dctr span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+    #export-card .leg .lg{display:flex;align-items:center;gap:9px;font-size:15px;color:var(--muted);margin:6px 0}
+    #export-card .leg .lg i{width:12px;height:12px;border-radius:4px;display:inline-block}
+    #export-card .leg .lg b{color:var(--clay2);font-weight:500}
+    #export-card .corigin{margin-top:22px;padding-top:20px;border-top:1px solid var(--hair)}
+    #export-card .map{position:relative;width:100%;margin:5px 0 10px}
+    #export-card .map img{width:100%;display:block;opacity:.85}
+    #export-card .map .pin{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--clay2);box-shadow:0 0 0 4px rgba(224,149,95,.28),0 0 14px 3px rgba(224,149,95,.7)}
+    #export-card .country{display:flex;align-items:center;gap:8px;font-size:20px;color:var(--ink)}
+    #export-card .country svg{width:16px;height:16px;fill:var(--clay2)}
+    #export-card .region{font-size:14px;color:var(--muted);margin:3px 0 0 24px}
+    #export-card .R{flex:1;min-width:0;display:flex;flex-direction:column}
+    #export-card .R .rlabel{font-size:14px;letter-spacing:.26em;text-transform:uppercase;color:var(--faint);text-align:center}
+    #export-card canvas.trace{flex:1;width:100%;display:block;min-height:0}
+    #export-card .rbot{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding-top:16px;border-top:1px solid var(--hair)}
+    #export-card .rname h1{font-weight:200;font-size:40px;line-height:1.06;margin:0 0 6px}
+    #export-card .rname .cc{font-size:16px;color:var(--clay2);font-style:italic}
+    #export-card .rqr{display:flex;align-items:center;gap:16px;flex:none}
+    #export-card .rqr img{width:138px;height:138px;border-radius:12px;background:#fff;padding:9px;box-sizing:border-box}
+    #export-card .rqr .cap{font-size:15px;color:var(--ink);line-height:1.35;max-width:150px}
+    #export-card .rqr .cap span{display:block;font-size:12px;color:var(--muted);margin-top:5px}
+    #export-card .brand{position:absolute;left:72px;bottom:24px;font-size:11px;letter-spacing:.14em;color:var(--faint)}
+  </style>
+  <div id="export-stage"><div id="export-card">
+    <div class="L">
+      <div class="eyebrow">Where you reshaped</div>
+      <img class="zone" id="e-zone" alt="">
+      <div class="drow">
+        <div class="dchart"><svg id="edonut" viewBox="0 0 120 120"></svg><div class="dctr"><b id="epct">0%</b><span id="elead">—</span></div></div>
+        <div class="leg" id="eleg"></div>
+      </div>
+      <div class="corigin">
+        <div class="eyebrow">Cultural origin</div>
+        <div class="map"><img id="e-map" src="worldmap.png" alt=""><span class="pin" id="epin"></span></div>
+        <div class="country"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg><b id="e-country"></b></div>
+        <div class="region" id="e-region"></div>
+      </div>
+    </div>
+    <div class="R">
+      <div class="rlabel">Your reshaping</div>
+      <canvas class="trace" id="e-trace" width="780" height="620"></canvas>
+      <div class="rbot">
+        <div class="rname"><h1 id="e-title">A Reshaping</h1><div class="cc" id="e-cc"></div></div>
+        <div class="rqr"><img src="data:image/png;base64,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" alt="QR"><div class="cap">Scan for the full reflection<span>in the Archive</span></div></div>
+      </div>
+    </div>
+    <div class="brand">FEELING THE SHIFT · A TACTILE ENCOUNTER WITH CULTURAL TRANSFORMATION</div>
+  </div></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+// ===== CONFIG — paste your Supabase values here =====
+const SUPA_URL = "https://vcdvjntqpasuzloemjwy.supabase.co";
+const SUPA_KEY = "sb_publishable_nmqv3NQx3CR8C4vNRg87Iw_nYkjuZAp";
+// =====================================================
+
+const $=id=>document.getElementById(id);
+let records=[], idx=0, raf=0;
+
+function rampRGB(t){const a=[130,130,130],b=[240,160,100];return a.map((v,k)=>Math.round(v+(b[k]-v)*t)).join(",");}
+function drawEdgeTo(ctx,pts,t,cw,ch,rw,rh){const s=Math.min(cw/rw,ch/rh)*0.8;
+  ctx.save();ctx.fillStyle=`rgba(${rampRGB(t)},0.72)`;
+  for(let i=0;i<pts.length;i+=2){const x=cw/2+(pts[i]-rw/2)*s+(Math.random()-0.5)*1.3,y=ch/2+(pts[i+1]-rh/2)*s+(Math.random()-0.5)*1.3;
+    ctx.beginPath();ctx.arc(x,y,1.4,0,6.283);ctx.fill();}ctx.restore();}
+function buildDonut(d){
+  const total=(d.top+d.middle+d.bottom)||1;
+  const zones=[["Upper",d.top,"#e0955f"],["Middle",d.middle,"#c96f43"],["Lower",d.bottom,"#7f4327"]];
+  const r=42,C=2*Math.PI*r; const svg=$("vdonut"); let cum=0,segs=`<circle cx="60" cy="60" r="${r}" fill="none" stroke="#211a15" stroke-width="15"/>`; const tg=[];
+  for(const z of zones){const f=z[1]/total;segs+=`<circle class="dseg" cx="60" cy="60" r="${r}" fill="none" stroke="${z[2]}" stroke-width="15" stroke-dasharray="0 ${C}" stroke-dashoffset="${-cum*C}" transform="rotate(-90 60 60)"/>`;tg.push(f*C);cum+=f;}
+  svg.innerHTML=segs;
+  const els=[...svg.querySelectorAll(".dseg")];
+  requestAnimationFrame(()=>requestAnimationFrame(()=>els.forEach((el,i)=>{el.style.transition="stroke-dasharray 1s cubic-bezier(.2,.7,.2,1)";el.setAttribute("stroke-dasharray",`${tg[i]} ${C}`);})));
+  let lead=zones[0];for(const z of zones)if(z[1]>lead[1])lead=z;
+  $("vdonut-leg").innerHTML=zones.map(z=>{const s=`${z[0]} · ${Math.round(z[1]/total*100)}%`;return `<div class="lg"><i style="background:${z[2]}"></i>${z===lead?`<b>${s}</b>`:s}</div>`;}).join("");
+}
+
+async function load(){
+  if(SUPA_URL.includes("YOUR-PROJECT")){ $("status").textContent="Set SUPA_URL / SUPA_KEY in the file first."; return; }
+  try{
+    const r=await fetch(`${SUPA_URL}/rest/v1/records?select=*&order=created_at.asc`,{headers:{apikey:SUPA_KEY}});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    records=await r.json();
+  }catch(e){ $("status").textContent="Couldn't load the archive ("+e.message+")."; return; }
+  if(!records.length){ $("status").textContent="No records yet — be the first at the installation."; return; }
+  $("status").style.display="none";
+  $("gallery").innerHTML=records.map((r,i)=>{
+    const d=r.created_at?new Date(r.created_at):null;
+    const when=d?d.toLocaleDateString(undefined,{month:"short",day:"numeric"}):"";
+    const ttl=(r.refl&&r.refl.title)?r.refl.title:"Reshaping";
+    return `<div class="card" data-i="${i}"><img loading="lazy" src="${r.img||""}" alt=""><div class="m"><b>#${i+1}</b><span>${when}</span></div></div>`;
+  }).join("");
+  [...document.querySelectorAll(".card")].forEach(c=>c.addEventListener("click",()=>openViewer(+c.dataset.i)));
+}
+
+// ---- viewer with looping trace replay ----
+let detK=0,detPhase="draw",detNext=0;
+function openViewer(i){ idx=i; const r=records[idx]; const rf=r.refl||{};
+  $("v-title").textContent=rf.title||"A reshaping";
+  $("v-culture").textContent=rf.culture?("Cultural Case — "+rf.culture):"";
+  $("v-gesture").textContent=rf.gesture||"";$("v-craft").textContent=rf.craft||"";
+  $("v-connection").textContent=rf.connection||"";$("v-question").textContent=rf.question||"";
+  const vf=$("v-fig");vf.style.display="";$("v-fig-img").src=rf.id?("culture/"+rf.id+".png"):"";$("v-fig-cap").textContent=rf.culture||"";
+  const dw=r.dwell||{top:0,middle:0,bottom:0};
+  const zi=$("v-zone");zi.style.display="";zi.src="zones/"+zoneFromDwell(dw)+".png";          // zone diagram
+  const o=ORIGIN[rf.id]||{};                                                                   // cultural origin: map + country
+  $("v-country").textContent=o.country||"";$("v-region").textContent=o.region||"";
+  const mw=$("v-map")?$("v-map").parentNode:null; if(mw)mw.style.display="";
+  const vp=$("v-pin"); if(o.lat!=null){vp.style.display="block";vp.style.left=((o.lon+180)/360*100)+"%";vp.style.top=((90-o.lat)/180*100)+"%";}else vp.style.display="none";
+  buildDonut(dw);
+  $("vpanel").scrollTop=0;
+  $("viewer").classList.add("on"); document.body.style.overflow="hidden";
+  sizeCanvas(); detK=0;detPhase="draw";detNext=0;
+  if(!raf) raf=requestAnimationFrame(loop);
+}
+function closeViewer(){ $("viewer").classList.remove("on"); document.body.style.overflow=""; cancelAnimationFrame(raf); raf=0; }
+function nav(dir){ idx=Math.max(0,Math.min(records.length-1,idx+dir)); openViewer(idx); }
+const vcan=$("vcanvas"), vctx=vcan.getContext("2d");
+function sizeCanvas(){const rc=vcan.getBoundingClientRect(),dpr=Math.min(devicePixelRatio,2);
+  vcan.width=Math.max(2,Math.round(rc.width*dpr));vcan.height=Math.max(2,Math.round(rc.height*dpr));vctx.clearRect(0,0,vcan.width,vcan.height);}
+addEventListener("resize",()=>{ if($("viewer").classList.contains("on")){sizeCanvas();detK=0;detPhase="draw";detNext=0;} });
+const REPLAY_MS=170;
+function loop(){ raf=requestAnimationFrame(loop);
+  const r=records[idx]; if(!r||!r.snaps||!r.snaps.length) return;
+  const rw=r.rec_w||r.recW||vcan.width, rh=r.rec_h||r.recH||vcan.height, now=performance.now();
+  if(detPhase==="draw"){ if(now>detNext){ if(detK<r.snaps.length){drawEdgeTo(vctx,r.snaps[detK].pts,r.snaps[detK].t,vcan.width,vcan.height,rw,rh);detK++;detNext=now+REPLAY_MS;} else {detPhase="hold";detNext=now+1600;} } }
+  else if(detPhase==="hold"){ if(now>detNext)detPhase="fade"; }
+  else { vctx.save();vctx.globalCompositeOperation="destination-out";vctx.fillStyle="rgba(0,0,0,0.05)";vctx.fillRect(0,0,vcan.width,vcan.height);vctx.restore();
+    if(now>detNext+1500){vctx.clearRect(0,0,vcan.width,vcan.height);detK=0;detPhase="draw";detNext=now+300;} }
+}
+// ---- export a printable 3:2 card (Xiaomi 2x3 ZINK) ----
+const ORIGIN={
+ "01":{country:"China",region:"East Asia",lat:29,lon:117},"02":{country:"Korea",region:"East Asia",lat:35.2,lon:128.1},
+ "03":{country:"Greece",region:"Mediterranean",lat:38,lon:23.7},"04":{country:"United States",region:"Southwest",lat:34.9,lon:-107.6},
+ "05":{country:"Korea",region:"East Asia",lat:36.3,lon:127.1},"06":{country:"Japan",region:"East Asia",lat:37,lon:139},
+ "07":{country:"United States",region:"Southwest",lat:36.7,lon:-110.3},"08":{country:"Nigeria",region:"West Africa",lat:9,lon:6},
+ "09":{country:"China",region:"East Asia",lat:38.5,lon:114.9},"10":{country:"Costa Rica",region:"Central America",lat:9.7,lon:-83.8},
+ "11":{country:"Italy",region:"Mediterranean",lat:41.9,lon:12.5},"12":{country:"Korea",region:"East Asia",lat:37.5,lon:127}
+};
+function zoneFromDwell(d){let lead="middle",lv=-1;for(const z of ["top","middle","bottom"])if(d[z]>lv){lv=d[z];lead=z;}return lead;}
+function buildDonutStatic(d,svgId,legId){
+  const total=(d.top+d.middle+d.bottom)||1;
+  const zones=[["Upper",d.top,"#e0955f"],["Middle",d.middle,"#c96f43"],["Lower",d.bottom,"#7f4327"]];
+  const r=42,C=2*Math.PI*r; let cum=0,segs='<circle cx="60" cy="60" r="'+r+'" fill="none" stroke="#211a15" stroke-width="15"/>';
+  for(const z of zones){const f=z[1]/total;segs+='<circle cx="60" cy="60" r="'+r+'" fill="none" stroke="'+z[2]+'" stroke-width="15" stroke-dasharray="'+(f*C)+' '+C+'" stroke-dashoffset="'+(-cum*C)+'" transform="rotate(-90 60 60)"/>';cum+=f;}
+  $(svgId).innerHTML=segs;
+  let lead=zones[0];for(const z of zones)if(z[1]>lead[1])lead=z;
+  $(legId).innerHTML=zones.map(z=>{const s=z[0]+' · '+Math.round(z[1]/total*100)+'%';return '<div class="lg"><i style="background:'+z[2]+'"></i>'+(z===lead?'<b>'+s+'</b>':s)+'</div>';}).join("");
+}
+async function exportCard(){
+  const r=records[idx]; if(!r||typeof html2canvas==="undefined")return; const rf=r.refl||{};
+  const btn=$("vexport"), lab=btn.textContent; btn.textContent="Rendering…"; btn.disabled=true;
+  try{
+    const d=r.dwell||{top:0,middle:0,bottom:0}, total=(d.top+d.middle+d.bottom)||1;
+    const z=zoneFromDwell(d); $("e-zone").src="zones/"+z+".png";
+    buildDonutStatic(d,"edonut","eleg");
+    $("epct").textContent=Math.round(d[z]/total*100)+"%"; $("elead").textContent={top:"Upper",middle:"Middle",bottom:"Lower"}[z];
+    const o=ORIGIN[rf.id]||{};
+    $("e-country").textContent=o.country||""; $("e-region").textContent=o.region||"";
+    const pin=$("epin"); if(o.lat!=null){pin.style.display="block";pin.style.left=((o.lon+180)/360*100)+"%";pin.style.top=((90-o.lat)/180*100)+"%";}else pin.style.display="none";
+    $("e-title").textContent=rf.title||"A Reshaping";
+    $("e-cc").textContent=rf.culture?("Cultural Case — "+rf.culture):"";
+    const cv=$("e-trace"), rect=cv.getBoundingClientRect();
+    const W=Math.max(2,Math.round((rect.width||760)*2)), H=Math.max(2,Math.round((rect.height||600)*2));
+    cv.width=W; cv.height=H; const ctx=cv.getContext("2d"); ctx.clearRect(0,0,W,H);
+    if(r.snaps&&r.snaps.length){ const rw=r.rec_w||r.recW||W, rh=r.rec_h||r.recH||H; for(const s of r.snaps) drawEdgeTo(ctx,s.pts,s.t,W,H,rw,rh); }
+    else if(r.img){ await new Promise(res=>{const im=new Image();im.onload=()=>{const sc=Math.min(W/im.width,H/im.height)*0.92;const w=im.width*sc,h=im.height*sc;ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h);res();};im.onerror=res;im.src=r.img;}); }
+    await Promise.all([...$("export-card").querySelectorAll("img")].map(im=>im.complete?1:new Promise(res=>{im.onload=im.onerror=res;})));
+    const canvas=await html2canvas($("export-card"),{backgroundColor:"#0b0a09",scale:2,useCORS:true,logging:false});
+    const a=document.createElement("a"); a.download="feeling-the-shift-"+String(idx+1).padStart(3,"0")+".png"; a.href=canvas.toDataURL("image/png"); a.click();
+  }catch(e){ alert("Export failed: "+(e&&e.message?e.message:e)); }
+  btn.textContent=lab; btn.disabled=false;
+}
+$("vexport").addEventListener("click",exportCard);
+$("vclose").addEventListener("click",closeViewer);
+$("vprev").addEventListener("click",()=>nav(-1));
+$("vnext").addEventListener("click",()=>nav(1));
+addEventListener("keydown",e=>{ if(!$("viewer").classList.contains("on"))return;
+  if(e.key==="Escape")closeViewer();else if(e.key==="ArrowRight")nav(1);else if(e.key==="ArrowLeft")nav(-1);});
+// swipe on the canvas
+let tx=0; vcan.addEventListener("touchstart",e=>tx=e.touches[0].clientX,{passive:true});
+vcan.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50)nav(dx<0?1:-1);},{passive:true});
+
+load();
+setInterval(()=>{ if(!$("viewer").classList.contains("on")) load(); }, 30000);   // refresh the gallery while idle
+</script>
+</body>
+</html>
